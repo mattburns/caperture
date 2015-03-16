@@ -13,3 +13,5 @@ w - width
 h - height
 ```
 
+![screenshot 1](https://github.com/mattburns/caperture/blob/master/screenshot1.png)
+![screenshot 2](https://github.com/mattburns/caperture/blob/master/screenshot2.png)
