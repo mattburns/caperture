@@ -13,7 +13,7 @@ func startQT() {
             " end tell"
 
     scriptToPerform = NSAppleScript(source:asCommand)
-    var errorInfo = AutoreleasingUnsafeMutablePointer<NSDictionary?>()
+    let errorInfo = AutoreleasingUnsafeMutablePointer<NSDictionary?>()
 
     if let script = scriptToPerform {
         script.executeAndReturnError(errorInfo)
@@ -32,23 +32,23 @@ func dragMouse() {
     let p0 = CGPointMake(x, y)
     let p1 = CGPointMake(x + w, y + h)
  
-    let mouseDown = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDown), p0, CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
-    let mouseDrag = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseDragged), p1, CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
-    let mouseUp = CGEventCreateMouseEvent(nil, CGEventType(kCGEventLeftMouseUp), p1, CGMouseButton(kCGMouseButtonLeft)).takeUnretainedValue()
+    let mouseDown = CGEventCreateMouseEvent(nil, CGEventType.LeftMouseDown, p0, CGMouseButton.Left)
+    let mouseDrag = CGEventCreateMouseEvent(nil, CGEventType.LeftMouseDragged, p1, CGMouseButton.Left)
+    let mouseUp = CGEventCreateMouseEvent(nil, CGEventType.LeftMouseUp, p1, CGMouseButton.Left)
  
     let kDelayUSec : useconds_t = 500_000
     
-    CGEventPost(CGEventTapLocation(kCGHIDEventTap), mouseDown)
+    CGEventPost(CGEventTapLocation.CGHIDEventTap, mouseDown)
     usleep(kDelayUSec)
-    CGEventPost(CGEventTapLocation(kCGHIDEventTap), mouseDrag)
+    CGEventPost(CGEventTapLocation.CGHIDEventTap, mouseDrag)
     usleep(kDelayUSec)
-    CGEventPost(CGEventTapLocation(kCGHIDEventTap), mouseUp)
+    CGEventPost(CGEventTapLocation.CGHIDEventTap, mouseUp)
 }
 
  
 if (Process.arguments.count != 9) {
-    println("usage:")
-    println("    ./caperture.swift -x 100 -y 100 -w 400 -h 300")
+    print("usage:")
+    print("    ./caperture.swift -x 100 -y 100 -w 400 -h 300")
 } else {
     startQT()
     dragMouse()
