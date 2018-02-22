@@ -1,6 +1,6 @@
 #!/usr/bin/env xcrun swift
 import Foundation
- 
+
 // Start QuickTime Player using AppleScript
 func startQT() {
     var scriptToPerform: NSAppleScript?
@@ -13,44 +13,46 @@ func startQT() {
             " end tell"
 
     scriptToPerform = NSAppleScript(source:asCommand)
-    let errorInfo = AutoreleasingUnsafeMutablePointer<NSDictionary?>()
+    var possibleError: NSDictionary?
 
     if let script = scriptToPerform {
-        script.executeAndReturnError(errorInfo)
+        script.executeAndReturnError(&possibleError)
+        if let error = possibleError {
+            print("ERROR: \(error)")
+        }
     }
 }
 
-// Click and drag the mouse as defined by the supplied commanline arguments
+// Click and drag the mouse as defined by the supplied commandline arguments
 func dragMouse() {
-    let args = NSUserDefaults.standardUserDefaults()
+    let args = UserDefaults.standard
 
-    let x  = CGFloat(args.integerForKey("x"))
-    let y  = CGFloat(args.integerForKey("y"))
-    let w = CGFloat(args.integerForKey("w"))
-    let h = CGFloat(args.integerForKey("h"))
- 
-    let p0 = CGPointMake(x, y)
-    let p1 = CGPointMake(x + w, y + h)
- 
-    let mouseDown = CGEventCreateMouseEvent(nil, CGEventType.LeftMouseDown, p0, CGMouseButton.Left)
-    let mouseDrag = CGEventCreateMouseEvent(nil, CGEventType.LeftMouseDragged, p1, CGMouseButton.Left)
-    let mouseUp = CGEventCreateMouseEvent(nil, CGEventType.LeftMouseUp, p1, CGMouseButton.Left)
- 
+    let x = CGFloat(args.integer(forKey: "x"))
+    let y = CGFloat(args.integer(forKey: "y"))
+    let w = CGFloat(args.integer(forKey: "w"))
+    let h = CGFloat(args.integer(forKey: "h"))
+
+    let p0 = NSPointToCGPoint(NSMakePoint(x, y))
+    let p1 = NSPointToCGPoint(NSMakePoint(x + w, y + h))
+
+    let mouseDown = CGEvent(mouseEventSource: nil, mouseType: CGEventType.leftMouseDown, mouseCursorPosition: p0, mouseButton: CGMouseButton.left)!
+    let mouseDrag = CGEvent(mouseEventSource: nil, mouseType: CGEventType.leftMouseDragged, mouseCursorPosition: p1, mouseButton: CGMouseButton.left)!
+    let mouseUp = CGEvent(mouseEventSource: nil, mouseType: CGEventType.leftMouseUp, mouseCursorPosition: p1, mouseButton: CGMouseButton.left)!
+
     let kDelayUSec : useconds_t = 500_000
-    
-    CGEventPost(CGEventTapLocation.CGHIDEventTap, mouseDown)
+
+    mouseDown.post(tap: CGEventTapLocation.cghidEventTap)
     usleep(kDelayUSec)
-    CGEventPost(CGEventTapLocation.CGHIDEventTap, mouseDrag)
+    mouseDrag.post(tap: CGEventTapLocation.cghidEventTap)
     usleep(kDelayUSec)
-    CGEventPost(CGEventTapLocation.CGHIDEventTap, mouseUp)
+    mouseUp.post(tap: CGEventTapLocation.cghidEventTap)
 }
 
- 
-if (Process.arguments.count != 9) {
+
+if (CommandLine.arguments.count != 9) {
     print("usage:")
     print("    ./caperture.swift -x 100 -y 100 -w 400 -h 300")
 } else {
     startQT()
     dragMouse()
 }
-
